@@ -62,7 +62,6 @@ window.addEventListener('DOMContentLoaded', function() {
             data: path
         });
 
-        console.log('it started');
 
         var lastquery = document.getElementsByName("q")[0].value;
         // instant search
@@ -102,14 +101,10 @@ window.addEventListener('DOMContentLoaded', function() {
 }, false);
 
 opera.extension.onmessage = function(event){
-    console.log('mam event ' + event.data);
-    console.log(JSON.stringify(event.data), null, ' ');
     if (event.data.query) {
-        console.log(JSON.stringify( event.data ));
         renderZeroClick(event.data.result, event.data.query); 
     } else if (event.data.topic === 'LoadedInjectedCSS' && event.data.data.path === path && !cssInjected) {
          // Remove the message listener so it doesn't get called again.
-         console.log('got injected css');
 
          var css = event.data.data.css;
 
