@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      function loadInjectedCSS(event, path) {
+          // Try to get the contents of the stylesheet.
+          var req = new XMLHttpRequest();
+          req.open('GET', path, false);
+          req.send();
+          
+          // Error check for reading the stylesheet.
+          if (!req.responseText) {
+              opera.postError('EXTENSION ERROR: Can\'t read ' + path);
+              return;
+          }
+          
+          // Send the contents of the stylesheet to the injected script.
+          event.source.postMessage({
+              topic: 'LoadedInjectedCSS',
+              data: {
+                  css: req.responseText,
+                  path: path
+              }
+          });
+      }
+
+       window.addEventListener("load", function(){
+      //var theButton;
+      //var ToolbarUIItemProperties = {
+      //  title: "DuckDuckGo Toolbar",
+      //  icon: "hello-button.png",
+      //  popup: {
+      //    href: "popup.html",
+      //    width: 110,
+      //    height: 30
+      //  }
+      //}
+      //theButton = opera.contexts.toolbar.createItem(ToolbarUIItemProperties);
+      //opera.contexts.toolbar.addItem(theButton);
+        opera.extension.onmessage = function(event){
+          if (event.data.query) {
+             var xhr=new XMLHttpRequest();
+            xhr.open('GET', 'https://api.duckduckgo.com?q=' + encodeURIComponent(event.data.query) + '&format=json', true);
+            xhr.onreadystatechange = function(data) {
+                if (xhr.readyState != 4)  { return; } 
+                var res = JSON.parse(xhr.responseText);
+                event.source.postMessage({result: res, query: event.data.query });
+            }
+            xhr.send(); 
+          } else if (event.data.topic == 'LoadInjectedCSS') {
+            loadInjectedCSS(event, event.data.data);
+          }
+        }
+      }, false);
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
