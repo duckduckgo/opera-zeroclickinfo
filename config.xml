@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" id="http://www.example.org/helloworld">
+        <name>DuckDuckGo for Opera</name>
+        <description>DuckDuckGo enhancements for Opera.</description>
+        <author href="https://duckduckgo.com" email="support@duckduckgo.com">DuckDuckGo</author>
+        <access origin="https://api.duckduckgo.com" />
+        <icon src="img/icon_128.png"/>
+</widget>
