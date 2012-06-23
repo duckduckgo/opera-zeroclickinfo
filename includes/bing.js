@@ -1,15 +1,9 @@
 // ==UserScript==
-// @include http://*.google.*/*
-// @include https://*.google.*/*
+// @include http://*.bing.com/*
 // ==/UserScript==
 
 
-
 var options = [];
-//options.dev = true;
-
-console.log = opera.postError;
-
 
 function lastQuery()
 {
@@ -25,6 +19,7 @@ function lastQuery()
     }
 }
 
+search(lastQuery());
 
 function getQuery(direct) {
     var instant = document.getElementsByClassName("gssb_a");
@@ -52,8 +47,18 @@ function qsearch(direct) {
     search(query);
 }
 
+function search(query)
+{
+
+    opera.extension.postMessage({ query: query });
+
+    if (options.dev)
+        console.log("query:", query);
+}
+
+
 var cssInjected = false;
-var path = 'css/google.css';
+var path = 'css/bing.css';
 window.addEventListener('DOMContentLoaded', function() {
 
         // Specify the path to the stylesheet here:
@@ -63,37 +68,8 @@ window.addEventListener('DOMContentLoaded', function() {
             data: path
         });
 
-
-        var lastquery = document.getElementsByName("q")[0].value;
-        // instant search
-        document.getElementsByName("q")[0].onkeyup = function(e){
-
-            if(lastquery !== getQuery())
-                hideZeroClick();
-
-            if(options.dev)
-                console.log(e.keyCode);
-
-            var fn = 'qsearch()';
-            if(e.keyCode == 40 || e.keyCode == 38)
-                fn = 'qsearch(true)';
-
-            clearTimeout(lasttime);
-            lasttime = setTimeout(fn, 700);
-
-            // instant search suggestions box onclick
-            document.getElementsByClassName("gssb_c")[0].onclick = function(){
-                if(options.dev)
-                    console.log("clicked")
-
-                hideZeroClick();
-                qsearch(true);
-            };
-        };
-
-
         // click on search button
-        document.getElementsByName("btnG")[0].onclick = function(){
+        document.getElementsByName("go")[0].onclick = function(){
             qsearch();
         };
 
@@ -119,18 +95,7 @@ opera.extension.onmessage = function(event){
     }
 }
 
-function search(query)
-{
-  //document.getElementById('center_col').innerHTML = ' <div id="zeroclick_loader"> '+
-  //    '<img src="http://duckduckgo.com/l.gif" /> Loading ...' +
-  //    '</div>' + document.getElementById('center_col').innerHTML;
 
-    opera.extension.postMessage({ query: query });
-
-    if (options.dev)
-        console.log("query: "+query);
- 
-}
 
 function renderZeroClick(res, query) 
 {
@@ -187,7 +152,7 @@ function showZeroClick()
 
 function createResultDiv()
 {
-    var result = document.getElementById("center_col");
+    var result = document.getElementById("results");
     var ddg_result = document.getElementById("ddg_zeroclick");
     showZeroClick();
     if (ddg_result === null) {
@@ -199,10 +164,11 @@ function createResultDiv()
 
 function resultsLoaded()
 {
-    if (document.getElementById("center_col") !== null){
-        if (document.getElementById("center_col").style.visibility === "visible") {
-            return true;
-        }
+    if(options.dev)
+        console.log(document.getElementById("results"), document.getElementById("results").style.visibility);
+    
+    if (document.getElementById("results") !== null){
+        return true;
     }
     
     return false;
@@ -257,24 +223,24 @@ function displaySummary(res, query) {
         
         if (i < 2) {
             var first = (i === 0)? 'first_category': '';
-            first_category += '<div class="' + cls + ' '+ first +'" onmouseover="this.className+=\' ddg_selected\'" onmouseout="this.className=this.className.replace(\' ddg_selected\',\'\')" onclick="window.location.href=this.firstChild.href">' + 
+            first_category += '<div class="' + cls + ' '+ first +'" >' + 
                                 link +
                               '</div>';
         } else {
-            hidden_categories += '<div class="' + cls + '" onmouseover="this.className+=\' ddg_selected\'" onmouseout="this.className=this.className.replace(\' ddg_selected\',\'\')" onclick="window.location.href=this.firstChild.href">' + 
+            hidden_categories += '<div class="' + cls + '" >' + 
                                 link +
                               '</div>';
         }
     }
 
     if (hidden_categories !== '') {
-        hidden_categories  = '<div class="ddg_zeroclick_more" onmouseover="this.className+=\' ddg_selected\'" onmouseout="this.className=\'ddg_zeroclick_more\'" onclick="this.firstChild.onclick();this.className=\'\';this.onmouseover=function(){}">' +
+        hidden_categories  = '<div class="ddg_zeroclick_more">' +
                                 '<a href="javascript:;" onclick="' + 
                                     "this.parentElement.style.display='none';" +
                                     "this.parentElement.nextElementSibling.style.display='block'" +
                                 '"> More related topics </a>' +
                              '</div>' + 
-                                '<div style="display:none;padding-left:0px;margin-left:-1px;">' + 
+                                '<div style="display:none;padding-left:0px;">' + 
                                     hidden_categories +
                                 '</div>';
     }
@@ -305,8 +271,8 @@ function displaySummary(res, query) {
     if (source_base_url === "wikipedia.org")
         more_image = '<img src="https://duckduckgo.com/assets/icon_wikipedia.v101.png" />';
 
-    result += '<div id="ddg_zeroclick_abstract" style="'+ (res['Image'] ? 'max-width: 420px': '') +'">' +
-                '<div onmouseover="this.className+=\' ddg_selected\'" onmouseout="this.className=\'\'" onclick="window.location.href=\''+ res['AbstractURL'] +'\'">' +
+    result += '<div id="ddg_zeroclick_abstract" style="'+ (res['Image'] ? 'max-width: 383px': '') +'">' +
+                '<div onclick="window.location.href=\''+ res['AbstractURL'] +'\'">' +
                 '<p>' + res['Abstract'] +
                 '</p><div id="ddg_zeroclick_official_links">' + 
                     more_image + 
@@ -370,18 +336,18 @@ function displayDisambiguation(res, query){
                             '<div class="icon_disambig">' + 
                                 '<img src="' + topics[j]['Icon']['URL'] +'" />' +
                             '</div>' +
-                            '<div class="ddg_zeroclick_disambig" onmouseover="this.className+=\' ddg_selected\'" onmouseout="this.className=this.className.replace(\' ddg_selected\',\'\')" onclick="window.location.href=this.firstChild.href">' +
+                            '<div class="ddg_zeroclick_disambig" >' +
                                 topics[j]['Result'] +
                             '</div>' +
                           '</div>';
             }
-            others += '<div class="disambig_more" onmouseover="this.className+=\' ddg_selected\'" onmouseout="this.className=\'disambig_more\'" onclick="this.firstChild.onclick();this.className=\'disambig_more\';this.onmouseover=function(){}">' +
+            others += '<div class="disambig_more" >' +
                                 '<a href="javascript:;" onclick="' + 
                                     "this.parentElement.nextElementSibling.style.display='block';this.onmouseover=null;" +
                                     "this.parentElement.innerHTML = '" + res['RelatedTopics'][i]['Name']  + "<hr>';" +
                                 '"> ' + res['RelatedTopics'][i]['Name']  + ' ('+ topics.length + ')</a>' +
                              '</div>' + 
-                                '<div style="display:none;padding-left:0px;margin-left:-1px;">' + 
+                                '<div style="display:none;padding-left:0px;">' + 
                                     output +
                                 '</div>';
             
@@ -394,7 +360,7 @@ function displayDisambiguation(res, query){
                             '<div class="icon_disambig">' + 
                                 '<img src="' + res['RelatedTopics'][i]['Icon']['URL'] +'" />' +
                             '</div>' +
-                            '<div class="ddg_zeroclick_disambig" onmouseover="this.className+=\' ddg_selected\'" onmouseout="this.className=this.className.replace(\' ddg_selected\',\'\')" onclick="window.location.href=this.firstChild.href">' +
+                            '<div class="ddg_zeroclick_disambig" >' +
                                 res['RelatedTopics'][i]['Result'] +
                             '</div>' +
                           '</div>';
@@ -403,7 +369,7 @@ function displayDisambiguation(res, query){
                                     '<div class="icon_disambig">' + 
                                         '<img src="' + res['RelatedTopics'][i]['Icon']['URL'] +'" />' +
                                     '</div>' +
-                                    '<div class="ddg_zeroclick_disambig" onmouseover="this.className+=\' ddg_selected\'" onmouseout="this.className=this.className.replace(\' ddg_selected\',\'\')" onclick="window.location.href=this.firstChild.href">' +
+                                    '<div class="ddg_zeroclick_disambig" >' +
                                         res['RelatedTopics'][i]['Result'] +
                                     '</div>' +
                                   '</div>'; 
@@ -412,13 +378,13 @@ function displayDisambiguation(res, query){
     }
     
     if (hidden_disambigs!== '') {
-        hidden_disambigs  = '<div class="disambig_more" onmouseover="this.className+=\' ddg_selected\'" onmouseout="this.className=this.className.replace(\' ddg_selected\',\'\')" onclick="this.firstChild.onclick();this.className=\'disambig_more\';this.onmouseover=function(){}">' +
+        hidden_disambigs  = '<div class="disambig_more" >' +
                                 '<a href="javascript:;" onclick="' + 
                                     "this.parentElement.style.display='none';" +
                                     "this.parentElement.nextElementSibling.style.display='block'" +
                                 '"> More ('+ nhidden + ')</a>' +
                              '</div>' + 
-                                '<div style="display:none;padding-left:0px;margin-left:-1px;">' + 
+                                '<div style="display:none;padding-left:0px;">' + 
                                     hidden_disambigs+
                                 '</div>';
     }
@@ -469,7 +435,7 @@ function displayCategory(res, query){
             console.log(res['RelatedTopics'][i]['Result']);
  
         if (i <= 2) {
-            categories += '<div class="wrapper" onmouseover="this.className+=\' ddg_selected\'" onmouseout="this.className=this.className.replace(\' ddg_selected\',\'\')" onclick="window.location.href=this.lastChild.firstChild.href;">' +
+            categories += '<div class="wrapper" >' +
                             '<div class="icon_category">' + 
                                 '<img src="' + res['RelatedTopics'][i]['Icon']['URL'] +'" />' +
                             '</div>' +
@@ -478,7 +444,7 @@ function displayCategory(res, query){
                             '</div>' +
                           '</div>';
         } else {
-            hidden_categories += '<div class="wrapper" onmouseover="this.className+=\' ddg_selected\'" onmouseout="this.className=this.className.replace(\' ddg_selected\',\'\')" onclick="window.location.href=this.lastChild.firstChild.href;">' +
+            hidden_categories += '<div class="wrapper" >' +
                                 '<div class="icon_category">' + 
                                     '<img src="' + res['RelatedTopics'][i]['Icon']['URL'] +'" />' +
                                 '</div>' +
@@ -493,13 +459,13 @@ function displayCategory(res, query){
     }
     
     if (hidden_categories !== '') {
-        hidden_categories = '<div class="category_more" onmouseover="this.className+=\' ddg_selected\'" onmouseout="this.className=this.className.replace(\' ddg_selected\',\'\')" onclick="this.firstChild.onclick();this.className=\'category_more\';this.onmouseover=function(){}">' +
+        hidden_categories = '<div class="category_more" >' +
                                 '<a href="javascript:;" onclick="' + 
                                     "this.parentElement.style.display='none';" +
                                     "this.parentElement.nextElementSibling.style.display='block'" +
                                 '"> More ('+ nhidden + ')</a>' +
                              '</div>' + 
-                                '<div style="display:none;padding-left:0px;margin-left:-1px;">' + 
+                                '<div style="display:none;padding-left:0px;">' + 
                                     hidden_categories+
                                 '</div>';
  
@@ -525,5 +491,4 @@ function displayCategory(res, query){
     }
 
 }
-
 
