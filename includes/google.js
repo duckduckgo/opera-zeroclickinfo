@@ -368,7 +368,7 @@ function displayDisambiguation(res, query){
             for(var j = 0; j < topics.length; j++){
                 output += '<div class="wrapper">' +
                             '<div class="icon_disambig">' + 
-                                '<img src="' + topics[j]['Icon']['URL'] +'" />' +
+                                (topics[j]['Icon']['URL'] !== '' ? '<img src="' + topics[j]['Icon']['URL'] +'" />' : '' )  +
                             '</div>' +
                             '<div class="ddg_zeroclick_disambig" onmouseover="this.className+=\' ddg_selected\'" onmouseout="this.className=this.className.replace(\' ddg_selected\',\'\')" onclick="window.location.href=this.firstChild.href">' +
                                 topics[j]['Result'] +
@@ -392,7 +392,7 @@ function displayDisambiguation(res, query){
         if (i <= 2) {
             disambigs += '<div class="wrapper">' +
                             '<div class="icon_disambig">' + 
-                                '<img src="' + res['RelatedTopics'][i]['Icon']['URL'] +'" />' +
+                                (res['RelatedTopics'][i]['Icon']['URL'] !== '' ? '<img src="' + res['RelatedTopics'][i]['Icon']['URL'] +'" />' : '' )  +
                             '</div>' +
                             '<div class="ddg_zeroclick_disambig" onmouseover="this.className+=\' ddg_selected\'" onmouseout="this.className=this.className.replace(\' ddg_selected\',\'\')" onclick="window.location.href=this.firstChild.href">' +
                                 res['RelatedTopics'][i]['Result'] +
@@ -401,7 +401,7 @@ function displayDisambiguation(res, query){
         } else {
             hidden_disambigs += '<div class="wrapper">' +
                                     '<div class="icon_disambig">' + 
-                                        '<img src="' + res['RelatedTopics'][i]['Icon']['URL'] +'" />' +
+                                        (res['RelatedTopics'][i]['Icon']['URL'] !== '' ? '<img src="' + res['RelatedTopics'][i]['Icon']['URL'] +'" />' : '' )  +
                                     '</div>' +
                                     '<div class="ddg_zeroclick_disambig" onmouseover="this.className+=\' ddg_selected\'" onmouseout="this.className=this.className.replace(\' ddg_selected\',\'\')" onclick="window.location.href=this.firstChild.href">' +
                                         res['RelatedTopics'][i]['Result'] +
