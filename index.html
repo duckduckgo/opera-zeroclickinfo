@@ -2,6 +2,21 @@
 <html lang="en">
   <head>
     <script>
+      var UIItemProperties = {
+        disabled: false,
+        title: 'DuckDuckGo Popup Toolbar',
+        icon: 'img/icon_16.png',
+        popup: {
+          href: 'popup.html',
+          width: 520,
+          height: 270 
+        },
+        badge: {}
+      };
+
+      var button = opera.contexts.toolbar.createItem(UIItemProperties);
+      opera.contexts.toolbar.addItem(button);
+
       function loadInjectedCSS(event, path) {
           // Try to get the contents of the stylesheet.
           var req = new XMLHttpRequest();
@@ -49,6 +64,16 @@
             xhr.send(); 
           } else if (event.data.topic == 'LoadInjectedCSS') {
             loadInjectedCSS(event, event.data.data);
+          } else if (event.data.tab) {
+            opera.postError(event.data.tab);
+            var tab = opera.extension.tabs.create({url: event.data.tab});
+            tab.focus()
+          } else if (event.data.log) {
+            opera.postError(event.data.log);
+          } else if (event.data.maximize) {
+            button.popup.height = 270;
+          } else if (event.data.minimize) {
+            button.popup.height = 60;
           }
         }
       }, false);
