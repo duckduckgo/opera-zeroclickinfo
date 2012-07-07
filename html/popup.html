@@ -208,7 +208,7 @@ QmCC">
         </label>
       </li>
       <li>
-        <input type="checkbox" checked="checked" id="adv_meanings">
+        <input type="checkbox" id="adv_meanings" onclick="return meanings_check()">
         <label for="adv_meanings">
           Show Meanings
         </label>
@@ -268,9 +268,24 @@ QmCC">
 
 var prefill_text = 'Search DuckDuckGo...';
 
+if (localStorage['meanings'] == undefined) {
+  localStorage['meanings'] = true;
+}
+
+if (localStorage['advanced_options'] == undefined){
+  localStorage['advanced_options'] = 'true';
+}
+
+
 if (localStorage['ducky'] === 'true') {
   document.getElementById('adv_ducky').checked = true;  
 }
+
+if (localStorage['meanings'] === 'true') {
+  document.getElementById('adv_meanings').checked = true;  
+}
+
+
 
 var search_form_input_homepage = document.getElementById('search_form_input_homepage');
 search_form_input_homepage.style.color = '#999999';
@@ -466,6 +481,12 @@ function add_bang(bang) {
 function ducky_check(){
   localStorage['ducky'] = document.getElementById('adv_ducky').checked;
 }
+
+function meanings_check(){
+  localStorage['meanings'] = document.getElementById('adv_meanings').checked;
+}
+
+
 
 </script>
 
