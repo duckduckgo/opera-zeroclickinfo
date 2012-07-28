@@ -24,6 +24,7 @@ var options = {};
 //  self.port.on('set-options', function(opt){
 //      options = opt;
 //  });
+var $ = window.$;
 
 var ddgBox = new DuckDuckBox('q', ['isr_pps'], 'center_col', true);
 
@@ -36,7 +37,7 @@ ddgBox.search = function(query) {
 }
 
 var cssInjected = false;
-var path = 'css/bing.css';
+var path = 'css/google.css';
 window.addEventListener('DOMContentLoaded', function() {
 
         // Specify the path to the stylesheet here:

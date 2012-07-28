@@ -25,6 +25,7 @@
 //  self.port.on('set-options', function(opt){
 //      options = opt;
 //  });
+var $ = window.$;
 
 var ddgBox = new DuckDuckBox('q', [], 'results', false);
 

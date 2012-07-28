@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2012 DuckDuckGo, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #ddg_zeroclick {
     background: none repeat scroll 0 0 #fafafa;
@@ -36,7 +51,9 @@
     */
 
     background: -webkit-gradient(linear, left top, left bottom, from(#da5b4a), to(#c9392c)); 
+    background: -moz-linear-gradient(to bottom, #da5b4a, #c9392c); 
     background: -o-linear-gradient(#da5b4a, #c9392c); 
+
     border: 1px solid #c23d2a;
     margin: -1px; 
     border-top-left-radius: 2px;
@@ -51,10 +68,9 @@
     float: right;
 }
 
-#ddg_zeroclick_header a:active {
+#ddg_zeroclick_header a, #ddg_zeroclick_header a:active {
     color: #fff !important;
 }
-
 
 #ddg_zeroclick_image {
     margin: 10px;
@@ -155,6 +171,7 @@
     line-height: 22px;
     padding: 0px 0px 0px 26px !important;
     border: 1px solid #fafafa;
+    cursor: pointer;
 }
 
 
@@ -216,6 +233,10 @@
     padding: 4px;
     clear: left;
     width: 474px;
+}
+
+.disambig_more a {
+    cursor: pointer;
 }
 
 .disambig_more hr {
