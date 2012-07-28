@@ -1,3 +1,19 @@
+<!--   
+   Copyright (C) 2012 DuckDuckGo, Inc.
+  
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+--> 
 <!DOCTYPE html>
 <head>
 <title>DuckDuckGo</title>
@@ -213,6 +229,12 @@ QmCC">
           Show Meanings
         </label>
       </li> 
+      <li>
+        <input type="checkbox" id="zeroclickinfo" onclick="return zeroclickinfo_check()">
+        <label for="zeroclickinfo">
+          Answers on Google/Bing
+        </label>
+      </li> 
     </ul>
     
   </div>
@@ -268,29 +290,13 @@ QmCC">
 
 var prefill_text = 'Search DuckDuckGo...';
 
-if (localStorage['meanings'] == undefined) {
-  localStorage['meanings'] = true;
-}
-
-if (localStorage['advanced_options'] == undefined){
-  localStorage['advanced_options'] = 'true';
-}
-
-
-if (localStorage['ducky'] === 'true') {
-  document.getElementById('adv_ducky').checked = true;  
-}
-
-if (localStorage['meanings'] === 'true') {
-  document.getElementById('adv_meanings').checked = true;  
-}
-
+opera.postError(widget.preferences);
+defaults_check();
 
 
 var search_form_input_homepage = document.getElementById('search_form_input_homepage');
 search_form_input_homepage.style.color = '#999999';
 search_form_input_homepage.value = prefill_text;
-eval("search_form_input_homepage.onclick = function() {if (this.value=='" + prefill_text + "') {this.value='';this.style.color='#000000';}}");
 
 
 document.getElementById('search_form_input_homepage').focus();
@@ -315,9 +321,7 @@ document.getElementById("search_form_input_homepage").onkeyup = function(){
   }
 }; 
 
-
-
-if (localStorage['advanced_options'] == undefined){
+if (localStorage['advanced_options'] === undefined) {
   localStorage['advanced_options'] = 'true';
 }
 
@@ -479,13 +483,31 @@ function add_bang(bang) {
 }
 
 function ducky_check(){
-  localStorage['ducky'] = document.getElementById('adv_ducky').checked;
+  widget.preferences['ducky'] = document.getElementById('adv_ducky').checked;
 }
 
 function meanings_check(){
-  localStorage['meanings'] = document.getElementById('adv_meanings').checked;
+  widget.preferences['meanings'] = document.getElementById('adv_meanings').checked;
 }
 
+function zeroclickinfo_check(){
+  widget.preferences['zeroclickinfo'] = document.getElementById('zeroclickinfo').checked;
+}
+
+function defaults_check(){
+  if (widget.preferences['ducky'] === 'true') {
+    document.getElementById('adv_ducky').checked = true;  
+  }
+
+  if (widget.preferences['meanings'] === 'true') {
+    document.getElementById('adv_meanings').checked = true;  
+  }
+
+  if (widget.preferences['zeroclickinfo'] === 'true') {
+    document.getElementById('zeroclickinfo').checked = true;  
+  }
+
+}
 
 
 </script>

@@ -1,0 +1,88 @@
+<!--   
+   Copyright (C) 2012 DuckDuckGo, Inc.
+  
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+--> 
+<!DOCTYPE html>
+<html>
+<head><title>DuckDuckGo for Opera - Options</title></head>
+<script type="text/javascript">
+
+// Saves options to widget.preferences.
+function save_options() {
+  var dev = document.getElementById("dev").checked;
+  widget.preferences["dev"] = dev;
+  var meanings = document.getElementById("meanings").checked;
+  widget.preferences["meanings"] = meanings;
+  var zeroclickinfo = document.getElementById("zeroclickinfo").checked;
+  widget.preferences["zeroclickinfo"] = zeroclickinfo;
+
+  if (dev)
+    console.log(widget.preferences);
+
+  // Update status to let user know options were saved.
+  var status = document.getElementById("status");
+  status.innerHTML = "Options Saved.";
+  setTimeout(function() {
+    status.innerHTML = "";
+  }, 750);
+
+  chrome.extension.sendMessage({'options': widget.preferences}, function(response){
+    console.log(response); 
+  });
+}
+
+// Restores select box state to saved value from widget.preferences.
+function restore_options() {
+  var dev = widget.preferences["dev"];
+  if (dev === 'true') {
+    document.getElementById("dev").checked = true;
+  } else {
+    document.getElementById("dev").checked = false;
+  }
+
+  var meanings = widget.preferences["meanings"];
+  if (meanings === 'true') {
+    document.getElementById("meanings").checked = true;
+  } else {
+    document.getElementById("meanings").checked = false;
+  }
+
+  var zeroclickinfo = widget.preferences["zeroclickinfo"];
+  if (zeroclickinfo === 'true' || zeroclickinfo == undefined) {
+    document.getElementById("zeroclickinfo").checked = true;
+  } else {
+    document.getElementById("zeroclickinfo").checked = false;
+  }
+}
+
+</script>
+
+<body onload="restore_options()">
+
+  Developer mode:
+  <input type="checkbox" id="dev" ></input>
+<br>
+  Meanings: 
+  <input type="checkbox" id="meanings" checked="yes"></input>
+<br>
+  Instant answers on Google/Bing
+  <input type="checkbox" id="zeroclickinfo" checked="yes"></input>
+<br>
+
+
+<button onclick="save_options()">Save</button>
+  <div id="status"> </div>
+</body>
+</html>

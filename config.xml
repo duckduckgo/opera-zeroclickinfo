@@ -5,4 +5,7 @@
         <author href="https://duckduckgo.com" email="support@duckduckgo.com">DuckDuckGo</author>
         <access origin="https://api.duckduckgo.com" />
         <icon src="img/icon_128.png"/>
+        <preference name="dev" value="false" />
+        <preference name="meanings" value="true" />
+        <preference name="zeroclickinfo" value="true" />
 </widget>
