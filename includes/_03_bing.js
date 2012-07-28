@@ -3,7 +3,6 @@
 // @include https://*.bing.com/*
 // ==/UserScript==
 
-
 /*
  * Copyright (C) 2012 DuckDuckGo, Inc.
  *
@@ -20,12 +19,9 @@
  * limitations under the License.
  */
 
-//  self.port.emit('get-options');
-//  var options = [];
-//  self.port.on('set-options', function(opt){
-//      options = opt;
-//  });
+var options = widget.preferences;
 var $ = window.$;
+console.log = opera.postError;
 
 var ddgBox = new DuckDuckBox('q', [], 'results', false);
 
@@ -42,10 +38,33 @@ var path = 'css/bing.css';
 window.addEventListener('DOMContentLoaded', function() {
 
         // Specify the path to the stylesheet here:
-
         opera.extension.postMessage({
             topic: 'LoadInjectedCSS',
             data: path
+        });
+
+        // instant search
+        $('[name="q"]').keyup(function(e){
+            var query = getQuery();
+            if(ddgBox.lastQuery !== query && query !== '')
+                ddgBox.hideZeroClick();
+
+            if(options.dev)
+                console.log(e.keyCode);
+
+            var direct = false;
+            if(e.keyCode == 40 || e.keyCode == 38)
+                direct = true;
+
+            clearTimeout(ddg_timer);
+            ddg_timer = setTimeout(function(){
+                qsearch(direct);
+            }, 700);
+           
+        });
+
+        $('[name="go"]').click(function(){
+            qsearch();
         });
 
 }, false);
@@ -94,30 +113,7 @@ function qsearch(direct) {
     ddgBox.search(query);
 } 
 
-// instant search
 
-$('[name="q"]').keyup(function(e){
-    var query = getQuery();
-    if(ddgBox.lastQuery !== query && query !== '')
-        ddgBox.hideZeroClick();
-
-    if(options.dev)
-        console.log(e.keyCode);
-
-    var direct = false;
-    if(e.keyCode == 40 || e.keyCode == 38)
-        direct = true;
-
-    clearTimeout(ddg_timer);
-    ddg_timer = setTimeout(function(){
-        qsearch(direct);
-    }, 700);
-   
-});
-
-$('[name="go"]').click(function(){
-    qsearch();
-});
 
 ddgBox.init();
 

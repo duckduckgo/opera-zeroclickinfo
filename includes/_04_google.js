@@ -19,12 +19,9 @@
  * limitations under the License.
  */
 
-//  self.port.emit('get-options');
-var options = {};
-//  self.port.on('set-options', function(opt){
-//      options = opt;
-//  });
+var options = widget.preferences;
 var $ = window.$;
+console.log = opera.postError;
 
 var ddgBox = new DuckDuckBox('q', ['isr_pps'], 'center_col', true);
 
@@ -45,6 +42,30 @@ window.addEventListener('DOMContentLoaded', function() {
         opera.extension.postMessage({
             topic: 'LoadInjectedCSS',
             data: path
+        });
+
+        // instant search
+        $('[name="q"]').keyup(function(e){
+            var query = getQuery();
+            if(ddgBox.lastQuery !== query && query !== '')
+                ddgBox.hideZeroClick();
+
+            if(options.dev)
+                console.log(e.keyCode);
+
+            var direct = false;
+            if(e.keyCode == 40 || e.keyCode == 38)
+                direct = true;
+
+            clearTimeout(ddg_timer);
+            ddg_timer = setTimeout(function(){
+                qsearch(direct);
+            }, 700);
+           
+        });
+
+        $('[name="btnG"]').click(function(){
+            qsearch();
         });
 
 }, false);
@@ -93,39 +114,6 @@ function qsearch(direct) {
     ddgBox.lastQuery = query;
     ddgBox.search(query);
 } 
-
-// instant search
-$('[name="q"]').keyup(function(e){
-    var query = getQuery();
-    if(ddgBox.lastQuery !== query && query !== '')
-        ddgBox.hideZeroClick();
-
-    if(options.dev)
-        console.log(e.keyCode);
-
-    var fn = function(){ qsearch(); };
-
-    if(e.keyCode == 40 || e.keyCode == 38)
-        fn = function(){ qsearch(true); };
-
-    clearTimeout(ddg_timer);
-    ddg_timer = setTimeout(function(){
-        fn();
-    }, 700);
-
-    // instant search suggestions box onclick
-    document.getElementsByClassName("gssb_c")[0].onclick = function(){
-        if(options.dev)
-            console.log("clicked")
-
-        ddgBox.hideZeroClick();
-        qsearch(true);
-    };
-});
-
-$('[name="btnG"]').click(function(){
-    qsearch();
-});
 
 ddgBox.init();
 
