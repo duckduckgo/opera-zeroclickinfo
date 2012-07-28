@@ -54,12 +54,23 @@
       //opera.contexts.toolbar.addItem(theButton);
         opera.extension.onmessage = function(event){
           if (event.data.query) {
-             var xhr=new XMLHttpRequest();
-            xhr.open('GET', 'https://api.duckduckgo.com?q=' + encodeURIComponent(event.data.query) + '&format=json', true);
+            
+            if (widget.preferences['zeroclickinfo'] === 'false') {
+              event.source.postMessage({result: '', query: event.data.query });
+              return;
+            }
+
+            var xhr=new XMLHttpRequest();
+            var url = 'https://api.duckduckgo.com?q=' + encodeURIComponent(event.data.query) + '&format=json';
+
+            if (widget.preferences['meanings'] !== 'true')
+              url += '&d=1';
+
+            xhr.open('GET', url, true);
             xhr.onreadystatechange = function(data) {
-                if (xhr.readyState != 4)  { return; } 
-                var res = JSON.parse(xhr.responseText);
-                event.source.postMessage({result: res, query: event.data.query });
+              if (xhr.readyState != 4)  { return; } 
+              var res = JSON.parse(xhr.responseText);
+              event.source.postMessage({result: res, query: event.data.query });
             }
             xhr.send(); 
           } else if (event.data.topic == 'LoadInjectedCSS') {
