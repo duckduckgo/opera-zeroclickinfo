@@ -85,6 +85,10 @@
             button.popup.height = 270;
           } else if (event.data.minimize) {
             button.popup.height = 60;
+          } else if (event.data.installPopup) {
+            opera.contexts.toolbar.addItem(button);
+          } else if (event.data.uninstallPopup) {
+            opera.contexts.toolbar.removeItem(button);
           }
         }
       }, false);

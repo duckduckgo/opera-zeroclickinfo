@@ -8,4 +8,5 @@
         <preference name="dev" value="false" />
         <preference name="meanings" value="true" />
         <preference name="zeroclickinfo" value="true" />
+        <preference name="popup" value="true" />
 </widget>
