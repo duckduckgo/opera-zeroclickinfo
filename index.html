@@ -77,8 +77,7 @@
             loadInjectedCSS(event, event.data.data);
           } else if (event.data.tab) {
             opera.postError(event.data.tab);
-            var tab = opera.extension.tabs.create({url: event.data.tab});
-            tab.focus()
+            var tab = opera.extension.tabs.create({url: event.data.tab, focused: true});
           } else if (event.data.log) {
             opera.postError(event.data.log);
           } else if (event.data.maximize) {
