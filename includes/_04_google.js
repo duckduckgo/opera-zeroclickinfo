@@ -20,7 +20,6 @@
  */
 
 var options = widget.preferences;
-var $ = window.$;
 console.log = opera.postError;
 
 var ddgBox = new DuckDuckBox('q', ['isr_pps'], 'center_col', true);
@@ -45,7 +44,7 @@ window.addEventListener('DOMContentLoaded', function() {
         });
 
         // instant search
-        $('[name="q"]').keyup(function(e){
+        window.$('[name="q"]').keyup(function(e){
             var query = getQuery();
             if(ddgBox.lastQuery !== query && query !== '')
                 ddgBox.hideZeroClick();
@@ -64,7 +63,7 @@ window.addEventListener('DOMContentLoaded', function() {
            
         });
 
-        $('[name="btnG"]').click(function(){
+        window.$('[name="btnG"]').click(function(){
             qsearch();
         });
 

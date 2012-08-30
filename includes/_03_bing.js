@@ -20,7 +20,6 @@
  */
 
 var options = widget.preferences;
-var $ = window.$;
 console.log = opera.postError;
 
 var ddgBox = new DuckDuckBox('q', [], 'results', false);
@@ -44,7 +43,7 @@ window.addEventListener('DOMContentLoaded', function() {
         });
 
         // instant search
-        $('[name="q"]').keyup(function(e){
+        window.$('[name="q"]').keyup(function(e){
             var query = getQuery();
             if(ddgBox.lastQuery !== query && query !== '')
                 ddgBox.hideZeroClick();
@@ -63,7 +62,7 @@ window.addEventListener('DOMContentLoaded', function() {
            
         });
 
-        $('[name="go"]').click(function(){
+        window.$('[name="go"]').click(function(){
             qsearch();
         });
 
