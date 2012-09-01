@@ -387,6 +387,7 @@ function search(){
   }
 
   opera.extension.postMessage({tab: "https://duckduckgo.com/?q="+encodeURIComponent(input)+special});
+  window.close();
 }
 
 document.getElementById('icon_advanced').onclick = function(){
