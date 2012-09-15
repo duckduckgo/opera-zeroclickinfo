@@ -15,7 +15,10 @@
       };
 
       var button = opera.contexts.toolbar.createItem(UIItemProperties);
-      opera.contexts.toolbar.addItem(button);
+
+      // add button just if the user really wants it
+      if (widget.preferences['popup'] === 'true')
+        opera.contexts.toolbar.addItem(button);
 
       function loadInjectedCSS(event, path) {
           // Try to get the contents of the stylesheet.
