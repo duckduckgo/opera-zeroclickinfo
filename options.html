@@ -1,19 +1,19 @@
-<!--   
+<!--
    Copyright (C) 2012 DuckDuckGo, Inc.
-  
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
-  
+
        http://www.apache.org/licenses/LICENSE-2.0
-  
+
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
 
---> 
+-->
 <!DOCTYPE html>
 <html>
 <head><title>DuckDuckGo for Opera - Options</title></head>
@@ -37,6 +37,10 @@ function save_options() {
   } else {
     opera.extension.postMessage({uninstallPopup: true});
   }
+
+  var remember_last_search = document.getElementById("remember_last_search").checked;
+  widget.preferences["remember_last_search"] = remember_last_search;
+
 
 
   if (dev)
@@ -80,6 +84,14 @@ function restore_options() {
   } else {
     document.getElementById("popup").checked = false;
   }
+
+  var remember_last_search = widget.preferences["remember_last_search"];
+  if (remember_last_search === 'true' || remember_last_search == undefined) {
+    document.getElementById("remember_last_search").checked = true;
+  } else {
+    document.getElementById("remember_last_search").checked = false;
+  }
+
 }
 
 </script>
@@ -89,7 +101,7 @@ function restore_options() {
   Developer mode:
   <input type="checkbox" id="dev" ></input>
 <br>
-  Meanings: 
+  Meanings:
   <input type="checkbox" id="meanings" checked="yes"></input>
 <br>
   Instant answers on Google/Bing
@@ -98,6 +110,10 @@ function restore_options() {
   Show popup button
   <input type="checkbox" id="popup" checked="yes"></input>
 <br>
+  Remember last search in popup
+  <input type="checkbox" id="remember_last_search" checked="yes"></input>
+<br>
+
 
 
 <button onclick="save_options()">Save</button>
