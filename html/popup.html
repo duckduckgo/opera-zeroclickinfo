@@ -546,8 +546,9 @@ function defaults_check(){
 }
 
 function search_input_clear() {
-    document.getElementById('search_form_input_homepage').value = '';
+    document.getElementById('search_form_input_homepage').value = prefill_text;
     document.getElementById("search_form_input_clear").style.background = '#fff';
+    document.getElementById("search_form_input_homepage").style.color= '#999';
     document.getElementById('search_form_input_homepage').focus();
 }
 
