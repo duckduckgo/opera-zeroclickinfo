@@ -9,4 +9,5 @@
         <preference name="meanings" value="true" />
         <preference name="zeroclickinfo" value="true" />
         <preference name="popup" value="true" />
+        <preference name="remember_last_search" value="true" />
 </widget>
