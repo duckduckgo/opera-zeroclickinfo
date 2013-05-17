@@ -9,12 +9,14 @@
         popup: {
           href: 'html/popup.html',
           width: 520,
-          height: 220 
+          height: 220
         },
         badge: {}
       };
 
       var button = opera.contexts.toolbar.createItem(UIItemProperties);
+      // resetting the last search on browser startup
+      localStorage['last_search'] = '';
 
       // add button just if the user really wants it
       if (widget.preferences['popup'] === 'true')
@@ -25,13 +27,13 @@
           var req = new XMLHttpRequest();
           req.open('GET', path, false);
           req.send();
-          
+
           // Error check for reading the stylesheet.
           if (!req.responseText) {
               opera.postError('EXTENSION ERROR: Can\'t read ' + path);
               return;
           }
-          
+
           // Send the contents of the stylesheet to the injected script.
           event.source.postMessage({
               topic: 'LoadedInjectedCSS',
@@ -57,7 +59,7 @@
       //opera.contexts.toolbar.addItem(theButton);
         opera.extension.onmessage = function(event){
           if (event.data.query) {
-            
+
             if (widget.preferences['zeroclickinfo'] === 'false') {
               event.source.postMessage({result: '', query: event.data.query });
               return;
@@ -71,11 +73,11 @@
 
             xhr.open('GET', url, true);
             xhr.onreadystatechange = function(data) {
-              if (xhr.readyState != 4)  { return; } 
+              if (xhr.readyState != 4)  { return; }
               var res = JSON.parse(xhr.responseText);
               event.source.postMessage({result: res, query: event.data.query });
             }
-            xhr.send(); 
+            xhr.send();
           } else if (event.data.topic == 'LoadInjectedCSS') {
             loadInjectedCSS(event, event.data.data);
           } else if (event.data.tab) {
