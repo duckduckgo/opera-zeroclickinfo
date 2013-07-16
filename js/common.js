@@ -1,10 +1,3 @@
-// ==UserScript==
-// @include http://*.google.*/*
-// @include https://*.google.*/*
-// @include http://*.bing.com/*
-// @include https://*.bing.com/*
-// ==/UserScript==
-
 /*
  * Copyright (C) 2012 DuckDuckGo, Inc.
  *
@@ -21,24 +14,37 @@
  * limitations under the License.
  */
 
+
 var HEADER_ICON_URL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACcAAAAgCAYAAACRpmGNAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABM9JREFUeNq8WF1oHFUUPndnZid/7S5JmzVJk7V9sNJqVqOiaBof1NY+JEVIQZA8CBVfIn3yyfhkC4XogxgfJJY+VEFRKM2iJGjRrMQUSsLuNoFGmthSu+xust2Z/Z2fnb3eGZJ1dnd2fhLwwGHv3Dkz95t7znfOuYsAgIZ6QWAuVveNBDu1cf1PwOw+V2VDO3gBWrqzEXiy1xegadpfLBbnifJdXV2RXQDEFjZYD1BVxkTdql5bWh/NCXIa66RcLt8TRfGTubm5zh07m8pYKA12gal6dzMbTmQF/KggYQNJcxx3ltix27pnkGh7YCsGLs+vDu2Mn32889UnfN7xVpb26m1kWf4ikUh809vbG9ktEfRiuWN6zWazo6orsYWUSqXrRHwOdtIIg31g+Xz+HHYgKkAdOMcAbaeS2cWIn2Gbpp3kDoqiRsgHjdW823Yqou0aPtbd8zFDuSAvYfhuWQShIMCZZ1rgULu7zjaZA7j4qwAcn4G3A82TZOqqWbowm7d0p+qStURGi7PPQgr+eVXU3PYgJRq6M1szrYZDjXtZm+61B+52jNcW2kiVbcdcLMHjTE5Qc2HYABxrBc5lozpUzR9uR5DNi/DtzLKmjeS3m3fh5Htfw8yNVUAIBQhzvQ5KGmpUWw2FK0qVsbrgpcu/w9HDByFIxkYSS2a0350PGBwc7HdajGm7u1aUFTWpBtTx/lZWm3t34ge4cuGs4YPvjAxo4Ht8HsP7qT/pkWYWNMBFEeY7Xi6Fate2zdYkX4jugBt+7Th0de6HfQTk0SOdDZ95/uneyrip8H0ge4sJuBk4QbnwiN6OzE1sx+DuUomilKLJnAidbWzdwtWGGcCZWUDSA8D5BW2qLCwBq8Qm65cn5mUU4rNwwWmeq3K1JAoRriBVwBkKPwvKw/fJijHLEJZLOJhMUVP+N6SIGQCmQczVzd28lxJe9Lcbvym3CMrfQ6aISgoKSjLh06Ir+NZ5kbMq/rQT9mQEuUKKurZCWKm6Lorow30vyFPLP7L+Dg/2kB2KOuhSwFEq2SGFrJSNXeA5TYppd938wKh4XwdMk5XrjF9la2GJnrj2OevdTW3Fta5VSZEuysZxxxwCquerSsw1s3hSCjNjJLZCGAOvmTDohAthPyJaAX8MB9UY3FPhVyXLpUPJrK8xKTxvQkq8dYpe7/G0NOFhmoIR1g3jRmFFWDoT30QXtwmBnRLCkBR/rG8Kg0cONHZ9MnnK5/NVEur9X9z9ba1lP8tAwOUCnCug0MKyK1pDCMtO2LDg12ow+s+8WbEnJzI1ZzUZKGuihg2AFSHqvogvSpG8VGpcD2m63+GButE97IitWq4qydF0QTbrfquS3cFPn+uD6VemqamXhpyu5bLzBfqLrXgsxBHGpoV1+DI6DFfuXIJIKvxfkCLkIUfEYa0G/zT4kbevZY2i0ZjCUmNOdk1PCFsn/kqv9lcyfqwn5r26dh5u8xhWOAxu5IPRpwJwIxaG5WScO9NB8Vsy+KPk3kYeA1ZwqHxu4aQTcLRVbjNsd/JFNalWuSmhxGFu6yHEBQRlQN5HMnh3eVbFZhXC8qGiWApxJnGnlTppz/84gVNC4O0OhVSK6tVJwwLN0KaNXz8wAOPHP4Du5j59x8E5Ze6/AgwAHWTjLQ+v54oAAAAASUVORK5CYII=';
 var DDG_URL = 'https://duckduckgo.com/?q=';
 
-var DuckDuckBox = function (inputName, forbiddenIDs, contentDiv, hover) {
-    this.inputName = inputName;
-    this.forbiddenIDs = forbiddenIDs;
+var DuckDuckBox = function (options) {
+    this.inputName = options.inputName;
+    this.forbiddenIDs = [];
+    this.debug = false;
+    
+    if (options.forbiddenIDs)
+        this.forbiddenIDs = options.forbiddenIDs;
 
-    if (contentDiv[0] === '#')
-        this.contentDiv = contentDiv;
+    if (options.debug) 
+        this.debug = true;
+
+    if (options.className)
+        this.className = options.className;
     else
-        this.contentDiv = '#' + contentDiv;
+        this.className = '';
 
-    if (hover) 
-        this.hover = hover;
+    if (options.contentDiv[0] === '#')
+        this.contentDiv = options.contentDiv;
+    else
+        this.contentDiv = '#' + options.contentDiv;
+
+    if (options.hover) 
+        this.hover = options.hover;
     else
         this.hover = false
 
-    input = window.$("[name='" + this.inputName + "']"); 
+    input = $("[name='" + this.inputName + "']"); 
     if (input.length !== 0)
         this.lastQuery = input.value;
     else
@@ -51,7 +57,7 @@ DuckDuckBox.prototype = {
     },
 
     search: function () {
-        if (options.dev)
+        if (this.debug)
             console.log('bad search called');
 
         return; 
@@ -63,7 +69,7 @@ DuckDuckBox.prototype = {
             var q = window.location.href.split(regex);
             q = q[q.length - 2].replace(/\+/g," ");
 
-            if(options.dev)
+            if(this.debug)
                 console.log(q)
 
             return decodeURIComponent(q);
@@ -73,17 +79,17 @@ DuckDuckBox.prototype = {
     renderZeroClick: function (res, query) {
         // disable on forbidden IDs
         for(var i in this.forbiddenIDs) {
-            if (window.$("#" + this.forbiddenIDs[i]).length !== 0)
+            if ($("#" + this.forbiddenIDs[i]).length !== 0)
                 return;           
         }
 
         if (res === '')
             return;
 
-        if (query === '')
+        if (query === '' || query === undefined)
             return;
 
-        if (options.dev) console.log(res, query);
+        if (this.debug) console.log(res, query);
 
         if (res['AnswerType'] !== "") {
             this.displayAnswer(res['Answer']);
@@ -116,25 +122,26 @@ DuckDuckBox.prototype = {
    },
 
     hideZeroClick: function () {
-        var ddg_result = window.$("#ddg_zeroclick");
+        var ddg_result = $("#ddg_zeroclick");
         if (ddg_result.length !== 0)
             ddg_result.hide();
     },
 
     showZeroClick: function () {
-        var ddg_result = window.$("#ddg_zeroclick");
-        if (options.dev) console.log( window.$("#ddg_zeroclick") )
+        var ddg_result = $("#ddg_zeroclick");
+        if (this.debug) console.log( $("#ddg_zeroclick") )
 
         if (ddg_result.length !== 0)
             ddg_result.show();
     },
 
     createResultDiv: function () {
-        var ddg_result = window.$("#ddg_zeroclick");
+        var ddg_result = $("#ddg_zeroclick");
         this.showZeroClick();
 
         if (ddg_result.length === 0) {
-            ddg_result = window.$("<div>", {id: 'ddg_zeroclick'});
+            ddg_result = $("<div>", {id: 'ddg_zeroclick'});
+            ddg_result.addClass(this.className);
         }
 
         // clean it up, please!
@@ -144,20 +151,20 @@ DuckDuckBox.prototype = {
     },
 
     updateResultDiv: function (result) {
-        var contentDiv = window.$(this.contentDiv);
+        var contentDiv = $(this.contentDiv);
         contentDiv.prepend(result);
     },
 
     createHeader: function (heading, query) {
-        return window.$('<div>', {id: 'ddg_zeroclick_header'})
-                       .append(window.$('<a>', {
+        return $('<div>', {id: 'ddg_zeroclick_header'})
+                       .append($('<a>', {
                                    class: 'ddg_head',
                                    href: DDG_URL + encodeURIComponent(query)
-                               }).html(heading))
-                       .append(window.$('<img>', {
+                               }).text(heading))
+                       .append($('<img>', {
                                    src: HEADER_ICON_URL
                                }))
-                       .append(window.$('<a>', {
+                       .append($('<a>', {
                                    class: 'ddg_more',
                                    href: DDG_URL + encodeURIComponent(query)
                                }).html('See DuckDuckGo results &raquo;'));
@@ -165,10 +172,10 @@ DuckDuckBox.prototype = {
     },
 
     resultsLoaded: function () {
-        if(options.dev)
-            console.log(window.$(this.contentDiv));
+        if(this.debug)
+            console.log($(this.contentDiv));
         
-        var contentDiv = window.$(this.contentDiv);
+        var contentDiv = $(this.contentDiv);
 
         if (contentDiv.length !== 0){
             if (contentDiv.css('visibility') === "visible" ||
@@ -178,6 +185,39 @@ DuckDuckBox.prototype = {
         }
         
         return false;
+    },
+
+    makeDisambig: function(text) {
+        var disambig = $('<div>', {
+                    class: 'ddg_zeroclick_disambig',
+                })
+                .click(function(event){
+                    window.location.href = $(this).find('a').attr('href');
+                });
+
+        var link_html = text.match(/<a[^>]*href="(.*?)"[^>]*>(.*?)<\/a>/);
+
+        var parts = text.split(/<a[^>]*>.*?<\/a>/);
+        disambig.append($('<span>').text(parts[0]));
+        disambig.append($('<a>').attr({href: link_html[1]})
+                                .text(link_html[2]));
+        disambig.append($('<span>').text(parts[1]));
+
+        return disambig;
+
+    },
+
+    makeCategoryItem: function(text) {
+        var category_item = $('<div>', {class: 'ddg_zeroclick_category_item'});
+        var parts = text.split(/<br>/);
+        var link_html = parts[0].match(/<a[^>]*href="(.*?)"[^>]*>(.*?)<\/a>/);
+        category_item.append($('<a>')
+                                    .attr('href', link_html[1])
+                                    .text(link_html[2]));
+        category_item.append($('<br>'));
+        category_item.append($('<span>').text(parts[1]));
+        
+        return category_item;
     },
 
     displayAnswer: function (answer) {
@@ -191,13 +231,13 @@ DuckDuckBox.prototype = {
             ddg_result.addClass('ddg_answer');
             ddg_result.html(answer);
 
-            if(options.dev)
+            if(this.debug)
                 console.log('showing answer');
             
             this.updateResultDiv(ddg_result)
 
         } else {
-            if(options.dev)
+            if(this.debug)
                 console.log('trying again');
 
             var $this = this;
@@ -244,25 +284,25 @@ DuckDuckBox.prototype = {
 
             var cls = (res['RelatedTopics'][i]['FirstURL'].match(/https?:\/\/[a-z0-9\-]+\.[a-z]+(?:\/\d+)?\/c\/.*/) !== null) ? "ddg_zeroclick_category" : "ddg_zeroclick_article";
             
-            link = window.$('<a>', {
+            link = $('<a>', {
                                 href: link[1],
                                 text: link[2]
                             });
 
-            var category = window.$('<div>', {
+            var category = $('<div>', {
                                 class: cls,
                                 html: link
                             }).click(function (event){
-                                window.location.href = window.$(this).children().attr('href');
+                                window.location.href = $(this).children().attr('href');
                             }).append(link);
 
 
             if (this.hover) {
                 category.mouseover(function (event){
-                            window.$(this).addClass('ddg_selected');
+                            $(this).addClass('ddg_selected');
                         })
                         .mouseout(function (event){
-                            window.$(this).removeClass('ddg_selected');
+                            $(this).removeClass('ddg_selected');
                         });
 
                 if (i < 2) {
@@ -291,44 +331,44 @@ DuckDuckBox.prototype = {
 
         result.append(this.createHeader(heading, query));
 
-        if (res['RelatedTopics'].length >= 2){
+        if (res['RelatedTopics'].length > 2){
 
-            if (options.dev)
+            if (this.debug)
                 console.log(tmp_div);
 
-            var more_topics = window.$('<div>', {
+            var more_topics = $('<div>', {
                                 class: 'ddg_zeroclick_more'
                             }).click(function (event){
-                                window.$(this).removeClass('ddg_selected');
-                                window.$(this).mouseover(function (event){});
-                                window.$(this).mouseout(function (event){});
-                            }).append(window.$('<a>', {
+                                $(this).removeClass('ddg_selected');
+                                $(this).mouseover(function (event){});
+                                $(this).mouseout(function (event){});
+                            }).append($('<a>', {
                                     text: 'More related topics'        
                                 }).click(function (event){
-                                    window.$(this).parent().next().show();
-                                    window.$(this).parent().hide();
+                                    $(this).parent().next().show();
+                                    $(this).parent().hide();
                                 })
                             );
 
             if (this.hover) {
                 more_topics.mouseover(function (event){
-                    window.$(this).addClass('ddg_selected');                
+                    $(this).addClass('ddg_selected');                
                 }).mouseout(function (event){
-                    window.$(this).removeClass('ddg_selected');
+                    $(this).removeClass('ddg_selected');
                 }).click(function (event){
-                    window.$(this).next().show();
-                    window.$(this).hide();
+                    $(this).next().show();
+                    $(this).hide();
                 });
             }
 
         }
 
         if (res['Image']) {
-            image = window.$('<div>', {
+            image = $('<div>', {
                 id: 'ddg_zeroclick_image'
-            }).append(window.$('<a>', {
+            }).append($('<a>', {
                     href: img_url
-                }).append(window.$('<img>', {
+                }).append($('<img>', {
                         class: 'ddg_zeroclick_img',
                         src: res['Image']
                     }
@@ -339,47 +379,47 @@ DuckDuckBox.prototype = {
         }
         
         var source_base_url = res['AbstractURL'].match(/http.?:\/\/(.*?\.)?(.*\..*?)\/.*/)[2];
-        var more_image = window.$('<img>', {
+        var more_image = $('<img>', {
             src: 'https://duckduckgo.com/i/'+ source_base_url +'.ico'
         }); 
 
         if (source_base_url === "wikipedia.org")
             more_image.attr('src', 'https://duckduckgo.com/assets/icon_wikipedia.v101.png');
 
-        var official_links = window.$('<div>', {
+        var official_links = $('<div>', {
                             id: 'ddg_zeroclick_official_links'
                        })
                        .append(more_image)
-                       .append(window.$('<a>', {
+                       .append($('<a>', {
                                    class: 'ddg_more_link',
                                    href: res['AbstractURL']
-                               }).html('More at ' + res['AbstractSource']));
+                               }).text('More at ' + res['AbstractSource']));
 
         if (official_site['url'] !== undefined) {
-            official_links.append(window.$('<span>', {text: ' | Official site: '}))
-                          .append(window.$('<a>', {
+            official_links.append($('<span>', {text: ' | Official site: '}))
+                          .append($('<a>', {
                                         href: official_site['url']
-                            }).html(official_site['text']));
+                            }).text(official_site['text']));
         }
-       
-        var text_div = window.$('<div>')
+        
+        var text_div = $('<div>')
                     .click(function (event){
                                 window.location.href = res['AbstractURL'];
                             })
-                    .append(window.$('<p>')
-                                .text(res['Abstract']))
+                    .append($('<p>')
+                                .html(res['Abstract']))
                     .append(official_links);
 
 
         if (this.hover) {
             text_div.mouseover(function (event){
-                window.$(this).addClass('ddg_selected');
+                $(this).addClass('ddg_selected');
             }).mouseout(function (event){
-                window.$(this).removeClass('ddg_selected');
+                $(this).removeClass('ddg_selected');
             });
         } 
 
-        var abst = window.$('<div>', {
+        var abst = $('<div>', {
             id: 'ddg_zeroclick_abstract',
             style:  (res['Image'] ? 'max-width: 420px': '')
         }).append(text_div);
@@ -392,7 +432,7 @@ DuckDuckBox.prototype = {
 
         abst.append(more_topics);
 
-        var tmp_div = window.$('<div>', {
+        var tmp_div = $('<div>', {
                               style: 'display:none;padding-left:0px;margin-left:-1px;'
                             });
 
@@ -403,17 +443,17 @@ DuckDuckBox.prototype = {
         abst.append(tmp_div);
 
         result.append(abst);
-        result.append(window.$('<div>', {class: 'clear'}));
+        result.append($('<div>', {class: 'clear'}));
 
         if(this.resultsLoaded()) {
             this.updateResultDiv(result);
 
-            if(options.dev)
+            if(this.debug)
                 console.log('loaded and showing');
         } else {
             var $this = this;
             setTimeout(function (){
-                if(options.dev)
+                if(this.debug)
                     console.log('trying again');
                 $this.updateResultDiv(result);
             }, 200);
@@ -437,7 +477,7 @@ DuckDuckBox.prototype = {
                 break;
             
 
-            if (options.dev)
+            if (this.debug)
                 console.log(res['RelatedTopics'][i]['Result']);
             
             // other topics
@@ -445,74 +485,67 @@ DuckDuckBox.prototype = {
                 var topics = res['RelatedTopics'][i]['Topics'];
                 var output = [];
                 for(var j = 0; j < topics.length; j++){
-                    var disambig = window.$('<div>', {
-                                            class: 'ddg_zeroclick_disambig',
-                                        })
-                                        .html(topics[j]['Result'])
-                                        .click(function(event){
-                                            window.location.href = window.$(this).children().attr('href');
-                                        });
-
+                    var disambig = this.makeDisambig(topics[j]['Result']);
                     if (this.hover) {
                         disambig.mouseover(function (event){
-                            window.$(this).addClass('ddg_selected');
+                            $(this).addClass('ddg_selected');
                         }).mouseout(function (event){
-                            window.$(this).removeClass('ddg_selected');
+                            $(this).removeClass('ddg_selected');
                         });
                     }
                     
-                    var icon_disambig = window.$('<div>', {class: 'icon_disambig'});
+                    var icon_disambig = $('<div>', {class: 'icon_disambig'});
                     if (topics[j]['Icon']['URL'])
-                        icon_disambig.append(window.$('<img>', {src: topics[j]['Icon']['URL']}))
+                        icon_disambig.append($('<img>', {src: topics[j]['Icon']['URL']}))
 
-                    tmp = window.$('<div>', {class: 'wrapper'})
+                    tmp = $('<div>', {class: 'wrapper'})
                                 .append(icon_disambig)
                                 .append(disambig);
-                    
+
                     output.push(tmp);
 
                 }
 
                var name = res['RelatedTopics'][i]['Name'];
 
-               var disambig_more = window.$('<div>', {class: 'disambig_more'})
-                        .append(window.$('<a>')
+               var disambig_more = $('<div>', {class: 'disambig_more'})
+                        .append($('<a>')
                             .text(name  + ' ('+ topics.length + ')')
                             .click(function (event){
                                 
-                                window.$(this).parent().next().show();
-                                window.$(this).hide();
-                                window.$(this).next().show();
+                                $(this).parent().next().show();
+                                $(this).hide();
+                                $(this).next().show();
 
                             }))
                         .click(function (event){
 
-                            window.$(this).children().hide();
-                            window.$(this).children().next().show();
-                            window.$(this).next().show();
+                            $(this).children().hide();
+                            $(this).children().next().show();
+                            $(this).next().show();
                             
-                            window.$(this).removeClass('ddg_selected');
-                            window.$(this).unbind('mouseover');
+                            $(this).removeClass('ddg_selected');
+                            $(this).unbind('mouseover');
                             
                         })
-                        .append(window.$('<div>')
+                        .append($('<div>')
                                         .text(name)
-                                        .append(window.$('<hr>'))
+                                        .append($('<hr>'))
                                         .hide()
                         );
 
                 if (this.hover) {
                     disambig_more.mouseover(function (event){
-                            window.$(this).addClass('ddg_selected');
+                            $(this).addClass('ddg_selected');
                         }).mouseout(function (event){
-                            window.$(this).removeClass('ddg_selected');
+                            $(this).removeClass('ddg_selected');
                         });
                 }
 
 
                 others.push(disambig_more);
 
-                var hidden_results = window.$('<div>', {style: 'display:none;padding-left:0px;'});
+                var hidden_results = $('<div>', {style: 'display:none;padding-left:0px;'});
                 if (this.hover)
                     hidden_results.css('margin-left', '-1px');
 
@@ -526,26 +559,22 @@ DuckDuckBox.prototype = {
                 continue;
             }
 
-            var icon_disambig = window.$('<div>', {class: 'icon_disambig'});
+            var icon_disambig = $('<div>', {class: 'icon_disambig'});
 
             if (res['RelatedTopics'][i]['Icon']['URL']) {
-                icon_disambig.append(window.$('<img>', {src: res['RelatedTopics'][i]['Icon']['URL']}));
+                icon_disambig.append($('<img>', {src: res['RelatedTopics'][i]['Icon']['URL']}));
             }
 
                                 
-            tmp = window.$('<div>', {class: 'wrapper'})
+            tmp = $('<div>', {class: 'wrapper'})
                     .append(icon_disambig)
-                    .append(window.$('<div>', {class: 'ddg_zeroclick_disambig'})
-                                .click(function (event){
-                                    window.location.href = window.$(this).children().attr('href');
-                                })
-                                .html(res['RelatedTopics'][i]['Result']));
+                    .append(this.makeDisambig(res['RelatedTopics'][i]['Result']));
 
             if (this.hover) {
                 tmp.find('div:nth-child(2)').mouseover(function (event){
-                    window.$(this).addClass('ddg_selected');
+                    $(this).addClass('ddg_selected');
                 }).mouseout(function (event){
-                    window.$(this).removeClass('ddg_selected'); 
+                    $(this).removeClass('ddg_selected'); 
                 });
             }
 
@@ -562,7 +591,7 @@ DuckDuckBox.prototype = {
         result = this.createResultDiv();
         result.append(this.createHeader('Meanings of ' + res['Heading'], query));
         
-        var abst = window.$('<div>', {
+        var abst = $('<div>', {
             id: 'ddg_zeroclick_abstract',
         });
 
@@ -574,29 +603,29 @@ DuckDuckBox.prototype = {
         // hidden disambigs
         if (hidden_disambigs.length > 0) {
 
-            tmp = window.$('<div>', {class: 'disambig_more'})
-                    .append(window.$('<a>').click(function (event){
-                        window.$(this).parent().hide();
-                        window.$(this).parent().next().show();
+            tmp = $('<div>', {class: 'disambig_more'})
+                    .append($('<a>').click(function (event){
+                        $(this).parent().hide();
+                        $(this).parent().next().show();
                     }).text('More (' + nhidden + ')'))
                       .click(function (event){
-                                window.$(this).removeClass('ddg_selected');
+                                $(this).removeClass('ddg_selected');
 
-                                window.$(this).hide();
-                                window.$(this).next().show();
+                                $(this).hide();
+                                $(this).next().show();
                             });
             
             if (this.hover) {
                 tmp.mouseover(function (event){
-                    window.$(this).addClass('ddg_selected');
+                    $(this).addClass('ddg_selected');
                 }).mouseout(function (event){
-                    window.$(this).removeClass('ddg_selected');
+                    $(this).removeClass('ddg_selected');
                 });
             }
 
             abst.append(tmp);
         
-            tmp = window.$('<div>', {style: 'display:none;padding-left:0px;'});
+            tmp = $('<div>', {style: 'display:none;padding-left:0px;'});
             if (this.hover)
                 tmp.css('margin-left', '-1px');
 
@@ -614,11 +643,11 @@ DuckDuckBox.prototype = {
         };
         
 
-        abst.append(window.$('<div>', {class: 'clear'}));
+        abst.append($('<div>', {class: 'clear'}));
 
         result.append(abst);
         
-        if (options.dev)
+        if (this.debug)
             console.log('result', result);
 
         if(this.resultsLoaded()) {
@@ -643,27 +672,29 @@ DuckDuckBox.prototype = {
             if (res['RelatedTopics'].length === 0)
                 break;
             
-            if (options.dev)
+            if (this.debug)
                 console.log(res['RelatedTopics'][i]['Result']);
             
-            var icon_category = window.$('<div>', {class: 'icon_category'});
+            var icon_category = $('<div>', {class: 'icon_category'});
 
             if (res['RelatedTopics'][i]['Icon']['URL']) {
-                icon_category.append(window.$('<img>', {src: res['RelatedTopics'][i]['Icon']['URL']}))
+                icon_category.append($('<img>', {src: res['RelatedTopics'][i]['Icon']['URL']}))
             }
 
-            var category = window.$('<div>', {class: 'wrapper'})
+            var category_item = this.makeCategoryItem(res['RelatedTopics'][i]['Result']);
+            var category = $('<div>', {class: 'wrapper'})
                 .append(icon_category)
-                .append(window.$('<div>', {class: 'ddg_zeroclick_category_item'})
-                .html(res['RelatedTopics'][i]['Result']));
+                .append(category_item);
+
+
 
             if (this.hover) {
                 category.mouseover(function(event){
-                    window.$(this).addClass('ddg_selected');
+                    $(this).addClass('ddg_selected');
                 }).mouseout(function(event){
-                    window.$(this).removeClass('ddg_selected');
+                    $(this).removeClass('ddg_selected');
                 }).click(function(event){
-                    window.location.href = window.$(this).children(':last').children().attr('href');
+                    window.location.href = $(this).children(':last').children().attr('href');
                 });
  
             }
@@ -679,7 +710,7 @@ DuckDuckBox.prototype = {
         result = this.createResultDiv();
         result.append(this.createHeader(res['Heading'], query));
         
-        var abst = window.$('<div>', {
+        var abst = $('<div>', {
             id: 'ddg_zeroclick_abstract',
         });
 
@@ -687,32 +718,32 @@ DuckDuckBox.prototype = {
             abst.append( categories[i] );
         };
 
-        tmp = window.$('<div>', {class: 'category_more'})
-                .append(window.$('<a>', {href: 'javascript:;'})
+        tmp = $('<div>', {class: 'category_more'})
+                .append($('<a>', {href: 'javascript:;'})
                             .click(function(event){
-                                window.$(this).parent().hide();
-                                window.$(this).parent().next().show();
+                                $(this).parent().hide();
+                                $(this).parent().next().show();
                             })
                             .text('More (' + nhidden + ')'));
 
         if (this.hover) {
             tmp.mouseover(function(event){
-                window.$(this).addClass('ddg_selected');
+                $(this).addClass('ddg_selected');
             }).mouseout(function(event){
-                window.$(this).removeClass('ddg_selected');
+                $(this).removeClass('ddg_selected');
             }).click(function(event){
 
-                window.$(this).hide();
-                window.$(this).next().show();
+                $(this).hide();
+                $(this).next().show();
 
-                window.$(this).removeClass('ddg_selected');
-                window.$(this).unbind('mouseover');
+                $(this).removeClass('ddg_selected');
+                $(this).unbind('mouseover');
             });
         }
 
         abst.append(tmp);
 
-        tmp = window.$('<div>', {style: 'display:none;padding-left:0px;'});
+        tmp = $('<div>', {style: 'display:none;padding-left:0px;'});
         if (this.hover)
             tmp.css('margin-left', '-1px');
 
@@ -724,7 +755,7 @@ DuckDuckBox.prototype = {
 
         result.append(abst);
 
-        if (options.dev)
+        if (this.debug)
             console.log(result);
 
         if(this.resultsLoaded()) {
