@@ -69,6 +69,7 @@ function Background()
 
 Background.prototype.query = function(query, callback) 
 {
+    console.log('got a query', query);
     var req = new XMLHttpRequest();
     if (localStorage['zeroclickinfo'] === 'true') {
         if(localStorage['meanings'] === 'true')
@@ -83,7 +84,7 @@ Background.prototype.query = function(query, callback)
     req.onreadystatechange = function(data) {
         if (req.readyState != 4)  { return; } 
         var res = JSON.parse(req.responseText);
-        callback(res);
+        console.log(res);
     }
 
     req.send(null);
