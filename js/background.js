@@ -84,7 +84,8 @@ Background.prototype.query = function(query, callback)
     req.onreadystatechange = function(data) {
         if (req.readyState != 4)  { return; } 
         var res = JSON.parse(req.responseText);
-        console.log(res);
+        console.log('res:', res);
+        callback(res);
     }
 
     req.send(null);

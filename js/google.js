@@ -45,6 +45,8 @@ chrome.extension.sendMessage({options: "get"}, function(opt){
     ddgBox.search = function(query) {
     var request = {query: query};
             chrome.extension.sendMessage(request, function(response){
+                if (options.dev)
+                    console.log('got response', response);
                 var time = new Date().getTime();
                 var d = time - ddg_zeroclick_timestamp;
 
@@ -52,6 +54,7 @@ chrome.extension.sendMessage({options: "get"}, function(opt){
                     console.log("delay", d);
 
                 if (d >= 500)
+
                     return true;
 
                 ddgBox.renderZeroClick(response, query);
