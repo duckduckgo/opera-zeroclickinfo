@@ -1,4 +1,4 @@
-EXTNAME := chrome-zeroclick
+EXTNAME := opera-zeroclick
 KEYFILE := $(EXTNAME).pem
 SHELL   := /usr/bin/env bash
 CHROME  := chromium -n --args
