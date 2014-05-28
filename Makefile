@@ -3,7 +3,7 @@ KEYFILE := $(EXTNAME).pem
 SHELL   := /usr/bin/env bash
 CHROME  := chromium -n --args
 CWD     := $(shell pwd)
-TMPDIR  := /tmp/$(EXTNAME)
+TMPDIR  := $(shell mktemp -d)
 VERSION := $(shell python2 -c "import json,sys;print json.loads(sys.stdin.read()).get('version','')" < manifest.json)
 ITEMS   := css/ html/ img/ js/ manifest.json
 

@@ -37,7 +37,7 @@ chrome.extension.sendMessage({options: "get"}, function(opt){
                 inputName: 'q',
                 forbiddenIDs: ['rg_s'],
                 hover: true,
-                contentDiv: 'center_col',
+                contentDiv: (opt['zeroclick_google_right']) ? 'rhs' : 'center_col',
                 className: 'google',
                 debug: options.dev
               });
@@ -49,6 +49,13 @@ chrome.extension.sendMessage({options: "get"}, function(opt){
                     console.log('got response', response);
                 var time = new Date().getTime();
                 var d = time - ddg_zeroclick_timestamp;
+
+                // ditch the InstantAnswer Box if there is a Knowledge Graph
+                // result.
+                if ($('#rhs_block ol').length > 0) {
+                    return true;
+                }
+
 
                 if (options.dev)
                     console.log("delay", d);
