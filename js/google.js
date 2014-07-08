@@ -43,30 +43,30 @@ chrome.extension.sendMessage({options: "get"}, function(opt){
               });
 
     ddgBox.search = function(query) {
-    var request = {query: query};
-            chrome.extension.sendMessage(request, function(response){
-                if (options.dev)
-                    console.log('got response', response);
-                var time = new Date().getTime();
-                var d = time - ddg_zeroclick_timestamp;
+        var request = {query: query};
+        chrome.extension.sendMessage(request, function(response){
+            if (options.dev)
+                console.log('got response', response);
+            var time = new Date().getTime();
+            var d = time - ddg_zeroclick_timestamp;
 
-                // ditch the InstantAnswer Box if there is a Knowledge Graph
-                // result.
-                if ($('#rhs_block ol .xpdopen').length > 0) {
-                    return true;
-                }
+            // ditch the InstantAnswer Box if there is a Knowledge Graph
+            // result.
 
-
-                if (options.dev)
-                    console.log("delay", d);
-
-                if (d >= 500)
-
-                    return true;
-
-                ddgBox.renderZeroClick(response, query);
+            if ($('#rhs_block ol .xpdopen').length > 0) {
                 return true;
-            });
+            }
+
+
+            if (options.dev)
+                console.log("delay", d);
+
+            if (d >= 500)
+                return true;
+
+            ddgBox.renderZeroClick(response, query);
+            return true;
+        });
 
         if (options.dev)
             console.log("asked query:", query);
