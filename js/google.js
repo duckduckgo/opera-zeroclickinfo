@@ -27,46 +27,52 @@ function init_timer() {
 
 chrome.extension.sendMessage({options: "get"}, function(opt){
     for (var option in opt) {
-        options[option] = (opt[option] === 'true') ? true : false; 
+        options[option] = (opt[option] === 'true') ? true : false;
 
     }
 
     init_timer();
-    
-    ddgBox = new DuckDuckBox({ 
+
+    ddgBox = new DuckDuckBox({
                 inputName: 'q',
                 forbiddenIDs: ['rg_s'],
                 hover: true,
-                contentDiv: (opt['zeroclick_google_right']) ? 'rhs' : 'center_col',
+                contentDiv: (options['zeroclick_google_right']) ? 'rhs' : 'center_col',
                 className: 'google',
                 debug: options.dev
               });
 
     ddgBox.search = function(query) {
-        var request = {query: query};
-        chrome.extension.sendMessage(request, function(response){
-            if (options.dev)
-                console.log('got response', response);
-            var time = new Date().getTime();
-            var d = time - ddg_zeroclick_timestamp;
+    var request = {query: query};
+            chrome.extension.sendMessage(request, function(response){
+                var time = new Date().getTime();
+                var d = time - ddg_zeroclick_timestamp;
 
-            // ditch the InstantAnswer Box if there is a Knowledge Graph
-            // result.
+                // ditch the InstantAnswer Box if there is a Knowledge Graph
+                // result, e.g. superbad
+                if ($('#rhs_block ol .xpdopen').length > 0) {
+                    return true;
+                }
 
-            if ($('#rhs_block ol .xpdopen').length > 0) {
+                // ditch the InstantAnswer Box if there is an artist Knowledge
+                // Graph result, e.g. justin bieber
+                if ($('#rhs_block ol .rhsvw').length > 0) {
+                    return true;
+                }
+
+                if ($('#center_col .vk_c').length > 0) {
+                    return true;
+                }
+
+                if (options.dev)
+                    console.log("delay", d);
+
+                if (d >= 500)
+                    return true;
+
+                ddgBox.renderZeroClick(response, query);
                 return true;
-            }
-
-
-            if (options.dev)
-                console.log("delay", d);
-
-            if (d >= 500)
-                return true;
-
-            ddgBox.renderZeroClick(response, query);
-            return true;
-        });
+            });
 
         if (options.dev)
             console.log("asked query:", query);
@@ -81,7 +87,7 @@ function getQuery(direct) {
     var instant = document.getElementsByClassName("gssb_a");
     if (instant.length !== 0 && !direct){
         var selected_instant = instant[0];
-        
+
         var query = selected_instant.childNodes[0].childNodes[0].childNodes[0].
                     childNodes[0].childNodes[0].childNodes[0].innerHTML;
         query = query.replace(/<\/?(?!\!)[^>]*>/gi, '');
@@ -100,7 +106,7 @@ function qsearch(direct) {
     ddgBox.lastQuery = query;
     ddgBox.search(query);
     init_timer();
-} 
+}
 
 // instant search
 $('[name="q"]').keyup(function(e){
