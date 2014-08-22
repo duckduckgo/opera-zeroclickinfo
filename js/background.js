@@ -26,11 +26,14 @@ function Background()
     var prev_version = localStorage['prev_version'];
 
     if (prev_version === undefined) {
-        chrome.tabs.create({'url': "https://duckduckgo.com/extensions/thanks/"});
+        chrome.tabs.create({
+            'url': "https://duckduckgo.com/extensions/thanks/?to=" + curr_version
+        });
     } else if (prev_version !== curr_version) {
-        chrome.tabs.create({'url': 
-            "https://duckduckgo.com/extensions/thanks/?from=" + prev_version + "&to="
-                + curr_version});
+        chrome.tabs.create({
+            'url':  "https://duckduckgo.com/extensions/thanks/?from=" + prev_version + "&to="
+                + curr_version
+        });
     }
     localStorage['prev_version'] = curr_version;
 
