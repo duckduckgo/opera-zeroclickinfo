@@ -74,14 +74,15 @@ Background.prototype.query = function(query, callback)
 {
     console.log('got a query', query);
     var req = new XMLHttpRequest();
-    if (localStorage['zeroclickinfo'] === 'true') {
+    console.log(localStorage['zeroclickinfo']);
+    if (localStorage['zeroclickinfo'] === 'false') {
+        callback(null);
+        return;
+    } else {
         if(localStorage['meanings'] === 'true')
             req.open('GET', 'https://chrome.duckduckgo.com?q=' + encodeURIComponent(query) + '&format=json', true);
         else
             req.open('GET', 'https://chrome.duckduckgo.com?q=' + encodeURIComponent(query) + '&format=json&d=1', true);
-    } else {
-        callback(null);
-        return;
     }
 
     req.onreadystatechange = function(data) {

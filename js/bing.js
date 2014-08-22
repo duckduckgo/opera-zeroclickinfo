@@ -37,6 +37,8 @@ chrome.extension.sendMessage({options: "get"}, function(opt){
     ddgBox.search = function(query) {
     var request = {query: query};
             chrome.extension.sendMessage(request, function(response){
+                if (response === null) return false;
+
                 ddgBox.renderZeroClick(response, query);
                 return true;
             });
@@ -48,16 +50,6 @@ chrome.extension.sendMessage({options: "get"}, function(opt){
     ddgBox.init();
 
 });
-
-ddgBox.search = function(query) {
-var request = {query: query};
-        chrome.extension.sendMessage(request, function(response){
-            ddgBox.renderZeroClick(response, query);
-        });
-
-    if (options.dev)
-        console.log("query:", query);
-}
 
 var ddg_timer;
 
@@ -109,6 +101,4 @@ $('[name="q"]').keyup(function(e){
 $('[name="go"]').click(function(){
     qsearch();
 });
-
-ddgBox.init();
 
