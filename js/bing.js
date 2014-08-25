@@ -39,6 +39,11 @@ chrome.extension.sendMessage({options: "get"}, function(opt){
             chrome.extension.sendMessage(request, function(response){
                 if (response === null) return false;
 
+                // ditch the InstantAnswer Box if there is a Bing Calc one
+                if (document.getElementById('rcCalB') !== null) {
+                    return true;
+                }
+
                 ddgBox.renderZeroClick(response, query);
                 return true;
             });
