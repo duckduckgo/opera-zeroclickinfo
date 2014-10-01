@@ -437,6 +437,7 @@
     }, 
     "permissions": [
         "https://chrome.duckduckgo.com/*",
+        "https://duckduckgo.com/*",
         "tabs"
     ]
 }
