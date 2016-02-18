@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 DuckDuckGo, Inc.
+ * Copyright (C) 2012, 2016 DuckDuckGo, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,73 +15,95 @@
  */
 
 
-function Background()
-{
-    $this = this;
+function Background() {
+  $this = this;
 
-    // clearing last search on borwser startup
-    localStorage['last_search'] = '';
+  // clearing last search on borwser startup
+  localStorage['last_search'] = '';
 
-    chrome.extension.onMessage.addListener(function(request, sender, callback){
-        console.log(request);
-        if(request.query)
-            return $this.query(request.query, callback);
-        if (request.options) {
-            callback(localStorage);
-        }
+  var os = "o";
+  if (window.navigator.userAgent.indexOf("Windows") != -1) os = "w";
+  if (window.navigator.userAgent.indexOf("Mac") != -1) os = "m";
+  if (window.navigator.userAgent.indexOf("Linux") != -1) os = "l";
 
-        if (request.selection) {
-        
-        }
+  localStorage['os'] = os;
 
-        if (request.current_url) {
-            chrome.tabs.getSelected(function(tab) {
-                console.log(tab);
-                var url = tab.url;
-                callback(url);
-            });
-        }
+  /*
+   * Make sure previous versions of the extensions defaults to showing
+   * Answers on Google/Bing
+   */
+  if (localStorage['prev_version'] === undefined) {
+    localStorage['zeroclickinfo'] = 'false';
+  } else {
+    if (localStorage['zeroclickinfo'] === undefined) {
+      localStorage['zeroclickinfo'] = 'true';
+    }
+  }
 
-        return true;
-    });
-
-//  this.menuID = chrome.contextMenus.create({
-//       "title" : "Ask the duck",
-//       "type" : "normal",
-//       "contexts" : ["selection"],
-//       "onclick" : function() {
-//          console.log('clicked!!!'); 
-//       }
-//  });
-}
-
-Background.prototype.query = function(query, callback) 
-{
-    console.log('got a query', query);
-    var req = new XMLHttpRequest();
-    console.log(localStorage['zeroclickinfo']);
-    if (localStorage['zeroclickinfo'] === 'false') {
-        callback(null);
-        return;
-    } else {
-        req.open('GET', 'https://chrome.duckduckgo.com?q=' + encodeURIComponent(query) + '&format=json&d=1', true);
+  chrome.extension.onMessage.addListener(function(request, sender, callback) {
+    if (request.query)
+      return $this.query(request.query, callback);
+    if (request.options) {
+      callback(localStorage);
     }
 
-    req.onreadystatechange = function(data) {
-        if (req.readyState != 4)  { return; } 
-        var res = JSON.parse(req.responseText);
-        console.log('res:', res);
-        callback(res);
+    if (request.current_url) {
+      chrome.tabs.getSelected(function(tab) {
+        console.log(tab);
+        var url = tab.url;
+        callback(url);
+      });
     }
 
-    req.send(null);
     return true;
+  });
 }
+
+Background.prototype.query = function(query, callback) {
+  console.log('got a query', query);
+  var req = new XMLHttpRequest();
+  if (localStorage['zeroclickinfo'] === 'false') {
+    callback(null);
+    return;
+  } else {
+    req.open('GET', 'https://api.duckduckgo.com?q=' + encodeURIComponent(query) + '&format=json&d=1&bext=' + localStorage['os'] + 'oe', true);
+  }
+
+  req.onreadystatechange = function(data) {
+    if (req.readyState != 4) {
+      return;
+    }
+    var res = JSON.parse(req.responseText);
+    console.log('res:', res);
+    callback(res);
+  };
+
+  req.send(null);
+  return true;
+};
 
 var background = new Background();
 
-chrome.omnibox.onInputEntered.addListener( function(text) {
-    chrome.tabs.query({'currentWindow': true, 'active': true}, function(tabs) {
-        chrome.tabs.update(tabs[0].id, {url: "https://duckduckgo.com/?q="+encodeURIComponent(text)});
+chrome.omnibox.onInputEntered.addListener(function(text) {
+  chrome.tabs.query({
+    'currentWindow': true,
+    'active': true
+  }, function(tabs) {
+    chrome.tabs.update(tabs[0].id, {
+      url: "https://duckduckgo.com/?q=" + encodeURIComponent(text) + "&bext=" + localStorage['os'] + "ol"
     });
+  });
+});
+
+//This adds Context Menu when user select some text.
+//create context menu
+chrome.contextMenus.create({
+  title: 'Search DuckDuckGo for "%s"',
+  contexts: ["selection"],
+  onclick: function(info) {
+    var queryText = info.selectionText;
+    chrome.tabs.create({
+      url: "https://duckduckgo.com/?q=" + queryText + "&bext=" + localStorage['os'] + "or"
+    });
+  }
 });
