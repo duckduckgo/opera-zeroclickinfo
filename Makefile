@@ -18,10 +18,10 @@ moveout: $(ITEMS)
 	mkdir $(TMPDIR)/$(EXTNAME)
 	cp -R $(ITEMS) $(TMPDIR)/$(EXTNAME)
 
-crx: moveout
+nex: moveout
 	$(CHROME) --pack-extension=$(TMPDIR)/$(EXTNAME) \
 	    --pack-extension-key=$(KEYFILE) --no-message-box
-	mv $(TMPDIR)/$(EXTNAME).crx $(CWD)/build/$(EXTNAME)-latest.crx
+	mv $(TMPDIR)/$(EXTNAME).nex $(CWD)/build/$(EXTNAME)-latest.nex
 
 zip: moveout
 	cd $(TMPDIR)/$(EXTNAME)/ && zip $(EXTNAME)-$(VERSION).zip -r ./*

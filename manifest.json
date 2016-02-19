@@ -1,6 +1,6 @@
 {
     "name": "DuckDuckGo for Opera",
-    "version": "1.4.4",
+    "version": "1.4.5",
     "description": "DuckDuckGo enhancements for Opera.",
     "icons": {
         "16": "img/icon_16.png",
@@ -432,9 +432,9 @@
         }
     ],
     "options_page": "html/options.html",
-    "background": { 
-            "scripts": ["js/background.js"] 
-    }, 
+    "background": {
+            "scripts": ["js/background.js"]
+    },
     "permissions": [
         "https://chrome.duckduckgo.com/*",
         "https://duckduckgo.com/*",
